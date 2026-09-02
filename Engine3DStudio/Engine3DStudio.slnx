@@ -5,4 +5,5 @@
   </Configurations>
   <Project Path="Engine/Engine.vcxproj" Id="f7d8e19d-276b-4db7-9ebd-36142487bffa" />
   <Project Path="SandBox/SandBox.vcxproj" Id="ab303b7e-be70-40f4-b37f-afc9bf89f054" />
+  <Project Path="ThirdParties/DirectXTK/DirectXTK_Desktop_2022.vcxproj" Id="e0b52ae7-e160-4d32-bf3f-910b785e5a8e" />
 </Solution>

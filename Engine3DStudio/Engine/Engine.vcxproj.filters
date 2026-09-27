@@ -20,16 +20,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\bin\Shaders\Triangle.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Shaders\Cube.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="include\Engine\API.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Engine\Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\bin\Shaders\Triangle.hlsl">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClInclude Include="include\Engine\Prerequisites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

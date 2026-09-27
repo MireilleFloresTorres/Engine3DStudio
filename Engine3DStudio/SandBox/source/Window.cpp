@@ -1,9 +1,15 @@
 #include "Window.h"
 
+//destruye la ventana y libera los recursos 
 Window::~Window()
 {
 	Destroy();
 }
+
+/**
+ * @brief Registra la clase y crea la ventana
+ * @return true si la ventana fue creada correctamente
+ */
 bool
 Window::Create(HINSTANCE instance, const wchar_t* tittle,
 	UINT clientWidth, UINT clientHeight) noexcept {
@@ -72,6 +78,10 @@ Window::Create(HINSTANCE instance, const wchar_t* tittle,
 	return true;
 }
 
+/**
+ * @brief Muestra y actualiza la ventana
+ * @param showCommand Comando utilizado para mostrar la ventana
+ */
 void Window::Show(int showCommand) noexcept
 {
 	if (m_handle)
@@ -81,6 +91,9 @@ void Window::Show(int showCommand) noexcept
 	}
 }
 
+/**
+ * @brief Destruye la ventana y desregistra su clase
+ */
 void Window::Destroy() noexcept
 {
 	if (m_handle)
@@ -98,6 +111,10 @@ void Window::Destroy() noexcept
 	m_instance = nullptr;
 }
 
+/**
+ * @brief Procesa los mensajes pendientes de Windows
+ * @return false cuando se recibe WM_QUIT
+ */
 bool Window::ProcessMessages() noexcept
 {
 	MSG message{};
@@ -113,11 +130,18 @@ bool Window::ProcessMessages() noexcept
 	return true;
 }
 
+/**
+ * @brief Comprueba si la ventana está minimizada
+ * @return true si la ventana está minimizada
+ */
 bool Window::IsMinimized() const noexcept
 {
 	return m_handle && IsIconic(m_handle);
 }
 
+/**
+ * @brief Procesa los mensajes enviados a la ventana
+ */
 LRESULT CALLBACK Window::WindowProcedure(
 	HWND handle,
 	UINT message,

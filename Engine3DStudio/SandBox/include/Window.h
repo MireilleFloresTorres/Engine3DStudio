@@ -10,21 +10,37 @@
 
 #include <Windows.h>
 
+/**
+ * @brief Gestiona la creación y control de una ventana de Windows
+ */
 class Window final {
 public:
+
+	/**
+	 * Crea una ventana.
+	 */
 	Window() = default;
+
+	//destruye la ventana y libera los recursos
 	~Window();
 
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
 
+	/**
+	 * @brief Registra la clase y crea la ventana
+	 * @param instance Instancia de la aplicación
+	 * @return true si la ventana fue creada correctamente
+	 */
 	bool
 		Create(HINSTANCE instance, const wchar_t* tittle,
 			UINT clientWidth, UINT clientHeight) noexcept;
 
+	//muestra la ventana con showCommand
 	void
 		Show(int showCommand) noexcept;
 
+	//destruye la ventana
 	void
 		Destroy() noexcept;
 
@@ -32,13 +48,18 @@ public:
 	bool
 		ProcessMessages() noexcept;
 
+	//ibtiene el identificador de la ventana 
 	HWND
 		GetHandle() const noexcept;
 
+	//para saber si la ventana está minimizada
 	bool
 		IsMinimized() const noexcept;
 
 private:
+	/**
+	 * @brief Procesa los mensajes enviados a la ventana.
+	 */
 	static LRESULT CALLBACK
 		WindowProcedure(HWND handle, UINT message,
 			WPARAM aParam, LPARAM lParam);

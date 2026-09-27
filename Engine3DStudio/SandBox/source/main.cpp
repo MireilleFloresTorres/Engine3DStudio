@@ -3,9 +3,20 @@
 #include <Windows.h>
 #include <Engine/Engine.h>
 
+/**
+ * @brief Nombre de la clase utilizada para la ventana principal.
+ */
 constexpr wchar_t WINDOW_CLASS_NAME[] =
 L"Engine3DStudio";
 
+/**
+ * @brief Procesa los mensajes de la ventana.
+ * window Identificador de la ventana.
+ * message Mensaje recibido.
+ * wParam Parámetro adicional del mensaje.
+ * lParam Parámetro adicional del mensaje.
+ *  Resultado del procesamiento del mensaje.
+ */
 LRESULT CALLBACK
 WindowProcedure(
     HWND window,
@@ -38,6 +49,16 @@ WindowProcedure(
 }
 
 
+/**
+ * @brief Punto de entrada principal de la aplicación
+ *
+ * Crea la ventana, inicializa el motor y ejecuta hasta que recibe WM_QUIT.
+ * previousInstance Instancia anterior
+ * instance Instancia actual
+ * commandLine Argumentos de la línea de comandos
+ * showCommand Indica cómo se mostrará la ventana
+ *  0 si la aplicación termina correctamente
+ */
 int WINAPI wWinMain(
     HINSTANCE previousInstance,
     HINSTANCE instance,

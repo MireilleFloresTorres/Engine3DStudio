@@ -9,9 +9,14 @@
 #include <cstdint>
 #include <new>
 
+/**
+ * @brief Libera un recurso COM y establece su puntero en nullptr
+ */
 #define SAFE_RELEASE(x) if(x != nullptr) x->Release(); x = nullptr;
 
-
+ /**
+  * @brief Registra un mensaje sobre la creación de un recurso
+  */
 #define MESSAGE( classObj, method, state )   \
 {                                            \
    std::wostringstream os_;                  \
@@ -19,7 +24,9 @@
    OutputDebugStringW( os_.str().c_str() );  \
 }
 
-  
+/**
+ * @brief Registra un mensaje de error en la salida de depuración
+ */
 #define ERROR(classObj, method, errorMSG)                     \
 {                                                             \
     try {                                                     \
@@ -32,7 +39,11 @@
     }                                                         \
 }
 
- 
+/**
+ * @brief Libera un recurso COM y establece su puntero en nullptr.
+ * @tparam T Tipo del recurso.
+ * @param object Recurso que será liberado.
+ */
 template<typename T>
 void SafeRelease(T*& object) noexcept
 {
@@ -42,18 +53,27 @@ void SafeRelease(T*& object) noexcept
         object = nullptr;
     }
 }
+
+/**
+ * @brief Contiene los recursos y datos internos del motor
+ */
 struct
 
    
     Engine::Implementation
 {
+    /**
+     * @brief Define los datos de un vértice.
+     */
     struct Vertex
     {
         float position[3];
         float color[4];
     };
 
-    
+    /**
+    * @brief Contiene la matriz de transformación del objeto.
+    */
     struct alignas(16) TransformBuffer
     {
         DirectX::XMFLOAT4X4 worldViewProjection;
@@ -92,7 +112,14 @@ struct
  
     ID3D11InputLayout* inputLayout = nullptr;
 
- 
+    /**
+    * @brief Compila un shader HLSL desde un archivo
+    * filename Archivo del shader
+    * entryPoint Punto de entrada del shader
+    * shaderModel Modelo del shader
+    * shaderBlod Recibe el código compilado
+    *  true si la compilación fue exitosa
+    */
     static bool
         CompileShader(const wchar_t* filename, const char* entryPoint,
             const char* shaderModel, ID3DBlob** shaderBlod) noexcept {
@@ -144,6 +171,9 @@ struct
         return true;
     }
 
+    /**
+     * @brief Libera todos los recursos utilizados por el motor
+     */
     void ReleaseResources() noexcept
     {
         if (context)
@@ -175,7 +205,7 @@ struct
     }
 };
 
-
+// Crea una instancia del motor
 Engine::Engine() noexcept
     :m_implementation(
         new (std::nothrow) Implementation{}
@@ -183,6 +213,7 @@ Engine::Engine() noexcept
 {
 }
 
+//el destructor, destruye y libera recursos
 Engine::~Engine() noexcept
 {
     Shutdown();
@@ -191,6 +222,10 @@ Engine::~Engine() noexcept
     m_implementation = nullptr;
 }
 
+/**
+ * @brief Inicializa DirectX y los recursos necesarios para renderizar
+ * @param nativeWindow Ventana donde se mostrará el motor
+ */
 bool Engine::Initialize(
     void* nativeWindow,
     std::uint32_t width,
@@ -436,7 +471,6 @@ bool Engine::Initialize(
         return false;
     }
 
-    //******************
     constexpr Implementation::Vertex vertices[]
     {
         // Frente
@@ -587,6 +621,9 @@ bool Engine::Initialize(
     return true;
 }
 
+/**
+ * @brief Renderiza la escena y presenta el resultado en pantalla
+ */
 void Engine::Render() noexcept
 {
     if (!m_implementation)
@@ -745,6 +782,9 @@ void Engine::Render() noexcept
     engine.swapChain->Present(1, 0);
 }
 
+/**
+ * @brief Libera los recursos utilizados
+ */
 void Engine::Shutdown() noexcept
 {
     if (m_implementation)

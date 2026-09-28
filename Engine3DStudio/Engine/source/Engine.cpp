@@ -40,9 +40,7 @@
 }
 
 /**
- * @brief Libera un recurso COM y establece su puntero en nullptr.
- * @tparam T Tipo del recurso.
- * @param object Recurso que será liberado.
+ * @brief Libera un recurso COM y establece su puntero en nullptr
  */
 template<typename T>
 void SafeRelease(T*& object) noexcept
@@ -114,11 +112,6 @@ struct
 
     /**
     * @brief Compila un shader HLSL desde un archivo
-    * filename Archivo del shader
-    * entryPoint Punto de entrada del shader
-    * shaderModel Modelo del shader
-    * shaderBlod Recibe el código compilado
-    *  true si la compilación fue exitosa
     */
     static bool
         CompileShader(const wchar_t* filename, const char* entryPoint,
@@ -683,7 +676,8 @@ void Engine::Render() noexcept
     using namespace DirectX;
 
     const XMMATRIX world =
-        XMMatrixRotationX(elapsedSeconds * 0.4f) * XMMatrixRotationY(elapsedSeconds * 0.8f);
+        XMMatrixRotationX(elapsedSeconds * 0.4f) * 
+        XMMatrixRotationY(elapsedSeconds * 0.8f);
 
     const XMVECTOR cameraPosition = XMVectorSet(0.0f, 2.0f, -5.0f, 1.0f);
 
@@ -691,7 +685,8 @@ void Engine::Render() noexcept
 
     const XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-    const XMMATRIX view = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+    const XMMATRIX view = XMMatrixLookAtLH
+                          (cameraPosition, cameraTarget, cameraUp);
 
     const float aspectRatio =
         static_cast<float>(engine.width) /

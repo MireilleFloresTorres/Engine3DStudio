@@ -8,6 +8,14 @@
  */
 extern "C" {
 
+	/**
+	 * @brief Inicializa el motor
+	 *
+	 * @param nativeWindow Ventana donde se ejecutará el motor.
+	 * @param width Ancho de la ventana
+	 * @param height Alto de la ventana
+	 * @return true si la inicialización fue correcta y false lo contrario
+	 */
 	ENGINE_API bool
 		engine_Initialize(HWND hwnd, int width, int height) noexcept;
 

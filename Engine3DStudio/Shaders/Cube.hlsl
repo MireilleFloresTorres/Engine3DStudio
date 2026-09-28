@@ -26,6 +26,9 @@ struct PSInput
 
 /**
  * @brief Transforma la posición del vértice y conserva su color
+ *
+ * @param input Datos de entrada del vértice
+ * @return Posición transformada y color del vértice
  */
 PSInput VSMain(VSInput input)
 {
@@ -37,6 +40,8 @@ PSInput VSMain(VSInput input)
 
 /**
  * @brief Devuelve el color del píxel
+ * @param input Datos procesados por el vertex shader.
+ * @return Color final del píxel.
  */
 float4 PSMain(PSInput input) : SV_TARGET
 {

@@ -4,11 +4,11 @@
 #include <Engine/Engine.h>
 
 /**
- * @brief Nombre de la clase utilizada para la ventana principal.
+ * @brief Nombre para la clase de la ventana 
  */
 constexpr wchar_t WINDOW_CLASS_NAME[] =
 L"Engine3DStudio";
-
+                                                                                                                                                                    
 /**
  * @brief Procesa los mensajes de la ventana.
  * window Identificador de la ventana.
@@ -59,7 +59,8 @@ WindowProcedure(
  * showCommand Indica cómo se mostrará la ventana
  *  0 si la aplicación termina correctamente
  */
-int WINAPI wWinMain(
+int 
+WINAPI wWinMain(
     HINSTANCE previousInstance,
     HINSTANCE instance,
     PWSTR commandLine,
@@ -186,7 +187,8 @@ int WINAPI wWinMain(
     UpdateWindow(window);
 
     MSG message{};
-    bool running = true;
+    bool 
+    running = true;
 
 
     while (running)

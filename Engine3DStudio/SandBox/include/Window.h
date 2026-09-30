@@ -13,10 +13,10 @@
 /**
  * @brief Gestiona la creación y control de una ventana de Windows
  * Aquí se crea, muestra, destruye y procesa los mensajes de la ventana
- * Ademas se registra la clase de la ventana 
+ * Ademas se registra la clase de la ventana
  */
-class 
-Window final {
+class
+	Window final {
 public:
 
 	//Crea una instancia de la ventana 
@@ -38,31 +38,31 @@ public:
 	 * @return true si la ventana fue creada correctamente.
 	 */
 	bool
-	Create(HINSTANCE instance, const wchar_t* tittle,
+		Create(HINSTANCE instance, const wchar_t* tittle,
 			UINT clientWidth, UINT clientHeight) noexcept;
 
 	//muestra la ventana con showCommand
 	void
-	Show(int showCommand) noexcept;
+		Show(int showCommand) noexcept;
 
 	//destruye la ventana
 	void
-	Destroy() noexcept;
+		Destroy() noexcept;
 
 	//Devuelve false cuando se recibe WM_QUIT.
 	bool
-	ProcessMessages() noexcept;
+		ProcessMessages() noexcept;
 
 	//ibtiene el identificador de la ventana 
 	HWND
-	GetHandle() const noexcept;
+		GetHandle() const noexcept;
 
 	//para saber si la ventana está minimizada
 	bool
-	IsMinimized() const noexcept;
+		IsMinimized() const noexcept;
 
 private:
-	
+
 	/**
 	 * @brief Procesa los mensajes enviados a la ventana.
 	 *

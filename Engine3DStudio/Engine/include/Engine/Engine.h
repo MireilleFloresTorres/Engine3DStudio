@@ -80,24 +80,24 @@ public:
 	 * @param height Alto de la ventana
 	 * @return true si la inicialización fue correcta yfalse lo contrario
 	 */
-	bool 
-	Initialize(
-		void* nativeWindow,
-		std::uint32_t width,
-		std::uint32_t height
-	) noexcept;
+	bool
+		Initialize(
+			void* nativeWindow,
+			std::uint32_t width,
+			std::uint32_t height
+		) noexcept;
 
 	/**
 	 * @brief Renderiza el contenido del motor.
 	 */
-	void 
-	Render() noexcept;
+	void
+		Render() noexcept;
 
 	/**
 	 * @brief Libera los recursos del motor.
 	 */
-	void 
-	Shutdown() noexcept;
+	void
+		Shutdown() noexcept;
 
 private:
 
@@ -106,8 +106,8 @@ private:
 	 *
 	 * Contiene los recursos y datos utilizados internamente por el motor
 	 */
-	struct 
-	Implementation;
+	struct
+		Implementation;
 
 	/**
 	 * @brief Puntero a la implementación interna del motor

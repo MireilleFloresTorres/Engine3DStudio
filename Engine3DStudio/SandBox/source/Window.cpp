@@ -82,7 +82,7 @@ Window::Create(HINSTANCE instance, const wchar_t* tittle,
  * @brief Muestra y actualiza la ventana
  * @param showCommand Comando utilizado para mostrar la ventana
  */
-void 
+void
 Window::Show(int showCommand) noexcept
 {
 	if (m_handle)
@@ -95,7 +95,7 @@ Window::Show(int showCommand) noexcept
 /**
  * @brief Destruye la ventana y desregistra su clase
  */
-void 
+void
 Window::Destroy() noexcept
 {
 	if (m_handle)
@@ -117,7 +117,7 @@ Window::Destroy() noexcept
  * @brief Procesa los mensajes pendientes de Windows
  * @return false cuando se recibe WM_QUIT
  */
-bool 
+bool
 Window::ProcessMessages() noexcept
 {
 	MSG message{};
@@ -137,7 +137,7 @@ Window::ProcessMessages() noexcept
  * @brief Comprueba si la ventana está minimizada
  * @return true si la ventana está minimizada
  */
-bool 
+bool
 Window::IsMinimized() const noexcept
 {
 	return m_handle && IsIconic(m_handle);

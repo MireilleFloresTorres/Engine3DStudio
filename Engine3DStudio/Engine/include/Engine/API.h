@@ -3,7 +3,7 @@
  * Configuración de la exportación e importación de la biblioteca
  *
  * Define una macro ENGINE_API que es utilizada para indicar qué elementos de la
- * biblioteca deben exportarse al compilar la DLL 
+ * biblioteca deben exportarse al compilar la DLL
  y cuáles deben importarse
  */
 

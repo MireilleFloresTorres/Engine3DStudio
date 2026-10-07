@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Engine/Prerequisites.h>
 #include "API.h"
 #include <cstdint>
 #include <Windows.h>
@@ -24,25 +24,25 @@ extern "C" {
 	 * @return true si la inicialización fue correcta yfalse lo contrario
 	 */
 	ENGINE_API bool
-		Engine_Initialize(HWND hwnd, int width, int height) noexcept;
+	Engine_Initialize(HWND hwnd, int width, int height) noexcept;
 
 	/**
 	 * @brief Actualiza el estado del motor.
 	 */
 	ENGINE_API void
-		Engine_Update() noexcept;
+	Engine_Update() noexcept;
 
 	/**
 	 * @brief Renderiza el contenido del motor.
 	 */
 	ENGINE_API void
-		Engine_Render() noexcept;
+	Engine_Render() noexcept;
 
 	/**
 	 * @brief Libera los recursos del motor.
 	 */
 	ENGINE_API void
-		Engine_Shutdown() noexcept;
+	Engine_Shutdown() noexcept;
 
 }
 
@@ -81,23 +81,21 @@ public:
 	 * @return true si la inicialización fue correcta yfalse lo contrario
 	 */
 	bool
-		Initialize(
-			void* nativeWindow,
-			std::uint32_t width,
-			std::uint32_t height
-		) noexcept;
+	Initialize(void* nativeWindow,
+			   std::uint32_t width,
+			   std::uint32_t height) noexcept;
 
 	/**
 	 * @brief Renderiza el contenido del motor.
 	 */
 	void
-		Render() noexcept;
+	Render() noexcept;
 
 	/**
 	 * @brief Libera los recursos del motor.
 	 */
 	void
-		Shutdown() noexcept;
+	Shutdown() noexcept;
 
 private:
 

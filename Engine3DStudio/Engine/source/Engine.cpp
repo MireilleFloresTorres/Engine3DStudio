@@ -1,44 +1,6 @@
 #include <Engine/Engine.h>
-#include <DirectXMath.h>
-#include <Windows.h>
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <sstream>
-#include <cstddef>
-#include <chrono>
-#include <cstdint>
-#include <new>
-
-/**
- * @brief Libera un recurso COM y establece su puntero en nullptr
- */
-#define SAFE_RELEASE(x) if(x != nullptr) x->Release(); x = nullptr;
-
- /**
-  * @brief Registra un mensaje sobre la creación de un recurso
-  */
-#define MESSAGE( classObj, method, state )   \
-{                                            \
-   std::wostringstream os_;                  \
-   os_ << classObj << "::" << method << " : " << "[CREATION OF RESOURCE " << ": " << state << "] \n"; \
-   OutputDebugStringW( os_.str().c_str() );  \
-}
-
-  /**
-   * @brief Registra un mensaje de error en la salida de depuración
-   */
-#define ERROR(classObj, method, errorMSG)                     \
-{                                                             \
-    try {                                                     \
-        std::wostringstream os_;                              \
-        os_ << L"ERROR : " << classObj << L"::" << method     \
-            << L" : " << errorMSG << L"\n";                   \
-        OutputDebugStringW(os_.str().c_str());                \
-    } catch (...) {                                           \
-        OutputDebugStringW(L"Failed to log error message.\n");\
-    }                                                         \
-}
-
+#include <Engine/Prerequisites.h>
+#include <Rendering/Device.h>
    /**
 	* @brief Libera un recurso COM y establece su puntero en nullptr
 	*/
@@ -83,6 +45,8 @@ struct
 
 	std::int32_t height = 0;
 
+
+	//Device device;
 	ID3D11Device* device = nullptr;
 
 	ID3D11DeviceContext* context = nullptr;

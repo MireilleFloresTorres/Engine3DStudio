@@ -1,19 +1,7 @@
 #include <Engine/Engine.h>
 #include <Engine/Prerequisites.h>
 #include <Rendering/Device.h>
-   /**
-	* @brief Libera un recurso COM y establece su puntero en nullptr
-	*/
-template<typename T>
-void SafeRelease(T*& object) noexcept
-{
-	if (object != nullptr)
-	{
-		object->Release();
-		object = nullptr;
-	}
-}
-
+  
 /**
  * @brief Contiene los recursos y datos internos del motor
  */
@@ -46,8 +34,8 @@ struct
 	std::int32_t height = 0;
 
 
-	//Device device;
-	ID3D11Device* device = nullptr;
+	Device device;
+	//ID3D11Device* device = nullptr;
 
 	ID3D11DeviceContext* context = nullptr;
 
@@ -154,7 +142,7 @@ struct
 
 		SafeRelease(swapChain);
 		SafeRelease(context);
-		SafeRelease(device);
+		device.destroy();
 
 		window = nullptr;
 		width = 0;
@@ -236,7 +224,7 @@ bool Engine::Initialize(
 		D3D11_SDK_VERSION,
 		&swapChainDescription,
 		&engine.swapChain,
-		&engine.device,
+		engine.device.getDeviceAddress (),
 		&selectedFeatureLevel,
 		&engine.context
 	);
@@ -245,7 +233,7 @@ bool Engine::Initialize(
 	{
 		SafeRelease(engine.swapChain);
 		SafeRelease(engine.context);
-		SafeRelease(engine.device);
+		engine.device.destroy();
 
 		result = D3D11CreateDeviceAndSwapChain(
 			nullptr,
@@ -257,7 +245,7 @@ bool Engine::Initialize(
 			D3D11_SDK_VERSION,
 			&swapChainDescription,
 			&engine.swapChain,
-			&engine.device,
+			engine.device.getDeviceAddress(),
 			&selectedFeatureLevel,
 			&engine.context
 		);
@@ -281,11 +269,9 @@ bool Engine::Initialize(
 		engine.ReleaseResources();
 		return false;
 	}
-	result = engine.device->CreateRenderTargetView(
-		backBuffer,
+	result = engine.device.CreateRenderTargetView(backBuffer,
 		nullptr,
-		&engine.renderTarget
-	);
+		&engine.renderTarget);
 	SafeRelease(backBuffer);
 
 	if (FAILED(result))
@@ -309,11 +295,8 @@ bool Engine::Initialize(
 	depthBufferDescription.BindFlags =
 		D3D11_BIND_DEPTH_STENCIL;
 
-	result = engine.device->CreateTexture2D(
-		&depthBufferDescription,
-		nullptr,
-		&engine.depthStencilBuffer
-	);
+	result = engine.device.CreateTexture2D(&depthBufferDescription, nullptr,
+	&engine.depthStencilBuffer);
 
 	if (FAILED(result))
 	{
@@ -321,11 +304,8 @@ bool Engine::Initialize(
 		return false;
 	}
 
-	result = engine.device->CreateDepthStencilView(
-		engine.depthStencilBuffer,
-		nullptr,
-		&engine.depthStencilView
-	);
+	result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer,
+	nullptr, &engine.depthStencilView);
 
 	if (FAILED(result))
 	{
@@ -375,12 +355,10 @@ bool Engine::Initialize(
 		engine.ReleaseResources();
 		return false;
 	}
-	result = engine.device->CreateVertexShader(
-		vertexShaderBlob->GetBufferPointer(),
-		vertexShaderBlob->GetBufferSize(),
-		nullptr,
-		&engine.vertexShader
-	);
+
+	result = engine.device.CreateVertexShader(vertexShaderBlob->GetBufferPointer(),
+											  vertexShaderBlob->GetBufferSize(),
+											  nullptr, &engine.vertexShader);
 
 	if (FAILED(result))
 	{
@@ -389,12 +367,11 @@ bool Engine::Initialize(
 		engine.ReleaseResources();
 		return false;
 	}
-	result = engine.device->CreatePixelShader(
-		pixelShaderBlob->GetBufferPointer(),
-		pixelShaderBlob->GetBufferSize(),
-		nullptr,
-		&engine.pixelShader
-	);
+	
+	result = engine.device.CreatePixelShader(pixelShaderBlob->GetBufferPointer(),
+											 pixelShaderBlob->GetBufferSize(),
+											 nullptr,
+											 &engine.pixelShader);
 
 	if (FAILED(result))
 	{
@@ -411,13 +388,11 @@ bool Engine::Initialize(
 		(offsetof(Implementation::Vertex, color)), D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	result = engine.device->CreateInputLayout(
-		inputElements,
-		ARRAYSIZE(inputElements),
-		vertexShaderBlob->GetBufferPointer(),
-		vertexShaderBlob->GetBufferSize(),
-		&engine.inputLayout
-	);
+	result = engine.device.CreateInputLayout(inputElements,
+											 ARRAYSIZE(inputElements),
+											 vertexShaderBlob->GetBufferPointer(),
+											 vertexShaderBlob->GetBufferSize(),
+											 &engine.inputLayout);
 
 	SafeRelease(pixelShaderBlob);
 	SafeRelease(vertexShaderBlob);
@@ -485,7 +460,7 @@ bool Engine::Initialize(
 	D3D11_SUBRESOURCE_DATA initialVertexData{};
 	initialVertexData.pSysMem = vertices;
 
-	result = engine.device->CreateBuffer(
+	result = engine.device.CreateBuffer(
 		&vertexBufferDescription,
 		&initialVertexData,
 		&engine.vertexBuffer
@@ -533,7 +508,7 @@ bool Engine::Initialize(
 	D3D11_SUBRESOURCE_DATA indexData{};
 	indexData.pSysMem = indices;
 
-	result = engine.device->CreateBuffer
+	result = engine.device.CreateBuffer
 	(&indexBufferDescription, &indexData, &engine.indexBuffer);
 
 	if (FAILED(result))
@@ -550,8 +525,8 @@ bool Engine::Initialize(
 	transformBufferDescription.Usage = D3D11_USAGE_DEFAULT;
 	transformBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-	result = engine.device->CreateBuffer
-	(&transformBufferDescription, nullptr, &engine.transformBuffer);
+	result = engine.device.CreateBuffer(&transformBufferDescription, nullptr,
+										&engine.transformBuffer);
 
 	if (FAILED(result))
 	{
@@ -564,8 +539,9 @@ bool Engine::Initialize(
 	rasterizerDescription.CullMode = D3D11_CULL_NONE;
 	rasterizerDescription.DepthClipEnable = TRUE;
 
-	result = engine.device->CreateRasterizerState
-	(&rasterizerDescription, &engine.rasterizerState);
+	result = engine.device.CreateRasterizerState(&rasterizerDescription, 
+												 &engine.rasterizerState);
+
 
 	if (FAILED(result))
 	{

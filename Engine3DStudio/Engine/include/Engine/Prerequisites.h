@@ -12,6 +12,20 @@
 #include <new>
 
 
+/**
+   * @brief Libera un recurso COM y establece su puntero en nullptr
+   */
+template<typename T>
+void SafeRelease(T*& object) noexcept
+{
+	if (object != nullptr)
+	{
+		object->Release();
+		object = nullptr;
+	}
+}
+
+
 HWND window = nullptr;
 
 std::uint32_t width = 0;

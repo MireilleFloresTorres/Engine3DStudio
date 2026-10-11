@@ -11,7 +11,19 @@ public:
 	init();
 
 	void
-	desctroy();
+	destroy();
+
+	ID3D11Device*
+		getDevice() const noexcept
+	{
+		return m_device;
+	}
+
+	ID3D11Device**
+		getDeviceAddress() noexcept
+	{
+		return &m_device;
+	}
 
 	HRESULT 
 	CreateRenderTargetView( ID3D11Resource* pResource,
@@ -25,24 +37,23 @@ public:
 					ID3D11Texture2D** ppTexture2D);
 
 	HRESULT
-	CreateVertexShader(_In_reads_(BytecodeLength)  const void* pShaderBytecode,
-						SIZE_T BytecodeLength,
-						ID3D11ClassLinkage* pClassLinkage,
-						ID3D11VertexShader** ppVertexShader);
-
-	HRESULT 
-	CreatePixelShader( _In_reads_(BytecodeLength)  const void* pShaderBytecode,
-						SIZE_T BytecodeLength,
-						ID3D11ClassLinkage* pClassLinkage,
-						ID3D11PixelShader** ppPixelShader);
+	CreateVertexShader(const void* pShaderBytecode,
+					   unsigned int BytecodeLength,
+					   ID3D11ClassLinkage* pClassLinkage,
+					   ID3D11VertexShader** ppVertexShader);
 
 	HRESULT
-	CreateInputLayout(
-	_In_reads_(NumElements)  const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
-	_In_range_(0, D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT)  UINT NumElements,
-	_In_reads_(BytecodeLength)  const void* pShaderBytecodeWithInputSignature,
-	SIZE_T BytecodeLength,
-	ID3D11InputLayout** ppInputLayout);
+	CreatePixelShader(const void* pShaderBytecode,
+					  unsigned int BytecodeLength,
+					  ID3D11ClassLinkage* pClassLinkage,
+					  ID3D11PixelShader** ppPixelShader);
+
+	HRESULT
+	CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
+					  unsigned int NumElements,
+					  const void* pShaderBytecodeWithInputSignature,
+					  unsigned int BytecodeLength,
+					  ID3D11InputLayout** ppInputLayout);
 
 	HRESULT
 	CreateBuffer(	const D3D11_BUFFER_DESC* pDesc,
@@ -53,10 +64,10 @@ public:
 	CreateRasterizerState(const D3D11_RASTERIZER_DESC* pRasterizerDesc,
 							ID3D11RasterizerState** ppRasterizerState);
 
-	HRESULT 
+	HRESULT
 	CreateDepthStencilView(ID3D11Resource* pResource,
-							const D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
-							ID3D11DepthStencilView** ppDepthStencilView);
+						   D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
+						   ID3D11DepthStencilView** ppDepthStencilView);
 
 	private:
 		ID3D11Device* m_device = nullptr;

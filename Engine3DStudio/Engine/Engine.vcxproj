@@ -193,9 +193,10 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine.cpp" />
+    <ClCompile Include="source\Engine\Engine.cpp" />
     <ClCompile Include="source\Rendering\Device.cpp" />
     <ClCompile Include="source\Rendering\DeviceContext.cpp" />
+    <ClCompile Include="source\Rendering\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThirdParties\DirectXTK\DirectXTK_Desktop_2022.vcxproj">
@@ -226,6 +227,8 @@
     <ClInclude Include="include\Engine\Prerequisites.h" />
     <ClInclude Include="include\Rendering\Device.h" />
     <ClInclude Include="include\Rendering\DeviceContext.h" />
+    <ClInclude Include="include\Rendering\SwapChain.h" />
+    <ClInclude Include="include\Rendering\Texture2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

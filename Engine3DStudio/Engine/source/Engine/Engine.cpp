@@ -1,6 +1,8 @@
-#include <Engine/Engine.h>
-#include <Engine/Prerequisites.h>
-#include <Rendering/Device.h>
+#include "Engine/Engine.h"
+#include "Engine/Prerequisites.h"
+#include "Rendering/Device.h"
+#include "Rendering/DeviceContext.h"
+#include "Rendering/Texture2D.h"
   
 /**
  * @brief Contiene los recursos y datos internos del motor
@@ -35,15 +37,17 @@ struct
 
 
 	Device device;
+	DeviceContext context; 
 	//ID3D11Device* device = nullptr;
-
-	ID3D11DeviceContext* context = nullptr;
+	//ID3D11DeviceContext* context = nullptr;
 
 	IDXGISwapChain* swapChain = nullptr;
 
 	ID3D11RenderTargetView* renderTarget = nullptr;
 
-	ID3D11Texture2D* depthStencilBuffer = nullptr;
+	//ID3D11Texture2D* depthStencilBuffer = nullptr;
+	Texture2D backBuffer; 
+	Texture2D depthStencilBuffer;
 
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 
@@ -102,7 +106,7 @@ struct
 			OutputDebugStringA(
 				static_cast<const char*>(
 					errors->GetBufferPointer()
-					)
+				)
 			);
 			SafeRelease(errors);
 		}
@@ -121,11 +125,11 @@ struct
 	 */
 	void ReleaseResources() noexcept
 	{
-		if (context)
-		{
-			context->ClearState();
-			context->Flush();
-		}
+		//if (context)
+		//{
+		//	context->ClearState();
+		//	context->Flush();
+		//}
 
 		SafeRelease(rasterizerState);
 		SafeRelease(transformBuffer);
@@ -137,11 +141,14 @@ struct
 		SafeRelease(vertexShader);
 
 		SafeRelease(depthStencilView);
-		SafeRelease(depthStencilBuffer);
+		depthStencilBuffer.destroy();
+		//SafeRelease(depthStencilBuffer);
 		SafeRelease(renderTarget);
 
 		SafeRelease(swapChain);
-		SafeRelease(context);
+		backBuffer.destroy(); 
+		//SafeRelease(context);
+		context.destroy(); 
 		device.destroy();
 
 		window = nullptr;
@@ -226,13 +233,14 @@ bool Engine::Initialize(
 		&engine.swapChain,
 		engine.device.getDeviceAddress (),
 		&selectedFeatureLevel,
-		&engine.context
+		engine.context.getDeviceContextAddress()
 	);
 
 	if (FAILED(result))
 	{
 		SafeRelease(engine.swapChain);
-		SafeRelease(engine.context);
+		engine.context.destroy();
+		//SafeRelease(engine.context);
 		engine.device.destroy();
 
 		result = D3D11CreateDeviceAndSwapChain(
@@ -247,7 +255,7 @@ bool Engine::Initialize(
 			&engine.swapChain,
 			engine.device.getDeviceAddress(),
 			&selectedFeatureLevel,
-			&engine.context
+			engine.context.getDeviceContextAddress()
 		);
 	}
 	if (FAILED(result))
@@ -255,11 +263,10 @@ bool Engine::Initialize(
 		engine.ReleaseResources();
 		return false;
 	}
-	ID3D11Texture2D* backBuffer = nullptr;
 	result = engine.swapChain->GetBuffer(
 		0,
 		__uuidof(ID3D11Texture2D),
-		reinterpret_cast<void**>(&backBuffer)
+		reinterpret_cast<void**>(engine.backBuffer.GetTextureAddress())
 	);
 
 	if (FAILED(result))
@@ -269,10 +276,9 @@ bool Engine::Initialize(
 		engine.ReleaseResources();
 		return false;
 	}
-	result = engine.device.CreateRenderTargetView(backBuffer,
-		nullptr,
-		&engine.renderTarget);
-	SafeRelease(backBuffer);
+	result = engine.device.CreateRenderTargetView(engine.backBuffer.GetTexture(),
+												  nullptr,
+												  &engine.renderTarget);
 
 	if (FAILED(result))
 	{
@@ -280,23 +286,11 @@ bool Engine::Initialize(
 		return false;
 	}
 
-	D3D11_TEXTURE2D_DESC depthBufferDescription{};
-	depthBufferDescription.Width = engine.width;
-	depthBufferDescription.Height = engine.height;
-	depthBufferDescription.MipLevels = 1;
-	depthBufferDescription.ArraySize = 1;
-	depthBufferDescription.Format =
-		DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-	depthBufferDescription.SampleDesc.Count = 1;
-	depthBufferDescription.SampleDesc.Quality = 0;
-	depthBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-
-	depthBufferDescription.BindFlags =
-		D3D11_BIND_DEPTH_STENCIL;
-
-	result = engine.device.CreateTexture2D(&depthBufferDescription, nullptr,
-	&engine.depthStencilBuffer);
+	result = engine.depthStencilBuffer.init(engine.device, 
+											engine.width, 
+											engine.height, 
+											DXGI_FORMAT_D24_UNORM_S8_UINT, 
+											D3D11_BIND_DEPTH_STENCIL);
 
 	if (FAILED(result))
 	{
@@ -304,7 +298,7 @@ bool Engine::Initialize(
 		return false;
 	}
 
-	result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer,
+	result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer.GetTexture(),
 	nullptr, &engine.depthStencilView);
 
 	if (FAILED(result))
@@ -327,10 +321,7 @@ bool Engine::Initialize(
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
-	engine.context->RSSetViewports(
-		1,
-		&viewport
-	);
+	engine.context.RSSetViewports(1, &viewport);
 
 	ID3DBlob* vertexShaderBlob = nullptr;
 	ID3DBlob* pixelShaderBlob = nullptr;
@@ -564,7 +555,7 @@ void Engine::Render() noexcept
 
 	Implementation& engine = *m_implementation;
 
-	if (!engine.context ||
+	if (!engine.context.getDeviceContext() ||
 		!engine.swapChain ||
 		!engine.renderTarget ||
 		!engine.vertexBuffer ||
@@ -585,18 +576,18 @@ void Engine::Render() noexcept
 		1.0f
 	};
 
-	engine.context->OMSetRenderTargets(
+	engine.context.OMSetRenderTargets(
 		1,
 		&engine.renderTarget,
 		engine.depthStencilView
 	);
 
-	engine.context->ClearRenderTargetView(
+	engine.context.ClearRenderTargetView(
 		engine.renderTarget,
 		clearColor
 	);
 
-	engine.context->ClearDepthStencilView(
+	engine.context.ClearDepthStencilView(
 		engine.depthStencilView,
 		D3D11_CLEAR_DEPTH |
 		D3D11_CLEAR_STENCIL,
@@ -649,7 +640,7 @@ void Engine::Render() noexcept
 		)
 	);
 
-	engine.context->UpdateSubresource(
+	engine.context.UpdateSubresource(
 		engine.transformBuffer, 0, nullptr, &transform, 0, 0
 	);
 
@@ -658,7 +649,7 @@ void Engine::Render() noexcept
 
 	constexpr UINT offset = 0;
 
-	engine.context->IASetVertexBuffers(
+	engine.context.IASetVertexBuffers(
 		0,
 		1,
 		&engine.vertexBuffer,
@@ -666,53 +657,53 @@ void Engine::Render() noexcept
 		&offset
 	);
 
-	engine.context->IASetIndexBuffer(
+	engine.context.IASetIndexBuffer(
 		engine.indexBuffer, DXGI_FORMAT_R16_UINT, 0
 	);
 
-	engine.context->IASetInputLayout(
+	engine.context.IASetInputLayout(
 		engine.inputLayout
 	);
 
-	engine.context->IASetPrimitiveTopology(
+	engine.context.IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 	);
 
-	engine.context->RSSetState(
+	engine.context.RSSetState(
 		engine.rasterizerState
 	);
 
-	engine.context->VSSetShader(
+	engine.context.VSSetShader(
 		engine.vertexShader,
 		nullptr,
 		0
 	);
 
-	engine.context->VSSetConstantBuffers(
+	engine.context.VSSetConstantBuffers(
 		0,
 		1,
 		&engine.transformBuffer
 	);
 
-	engine.context->PSSetShader(
+	engine.context.PSSetShader(
 		engine.pixelShader,
 		nullptr,
 		0
 	);
 
-	engine.context->PSSetShader(
+	engine.context.PSSetShader(
 		engine.pixelShader,
 		nullptr,
 		0
 	);
 
-	engine.context->PSSetShader(
+	engine.context.PSSetShader(
 		engine.pixelShader,
 		nullptr,
 		0
 	);
 
-	engine.context->DrawIndexed(36, 0, 0);
+	engine.context.DrawIndexed(36, 0, 0);
 
 	engine.swapChain->Present(1, 0);
 }

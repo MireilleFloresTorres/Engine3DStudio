@@ -4,6 +4,7 @@
 class
 DeviceContext
 {
+public:
 	DeviceContext() = default;
 	~DeviceContext();
 
@@ -25,9 +26,8 @@ DeviceContext
 		return &m_deviceContext;
 	}
 
-
 	ID3D11DeviceContext&
-	requireContext() const noexcept;
+		requireContext() const noexcept;
 
 
 	void 
@@ -89,6 +89,10 @@ DeviceContext
 	PSSetShader(ID3D11PixelShader* pPixelShader,
 				ID3D11ClassInstance* const* ppClassInstances = nullptr,
 				unsigned int NumClassInstances = 0) noexcept;
+	void
+	PSSetShaderResources(unsigned int StartSlot,
+						 unsigned int NumViews,
+						 ID3D11ShaderResourceView* const* ppShaderResourceViews);
 
 	void
 	DrawIndexed(unsigned int indexCount,

@@ -25,39 +25,12 @@ void SafeRelease(T*& object) noexcept
 	}
 }
 
-
-HWND window = nullptr;
-
-std::uint32_t width = 0;
-
-std::int32_t height = 0;
-
-ID3D11Device* device = nullptr;
-
-ID3D11DeviceContext* context = nullptr;
-
-IDXGISwapChain* swapChain = nullptr;
-
-ID3D11RenderTargetView* renderTarget = nullptr;
-
-ID3D11Texture2D* depthStencilBuffer = nullptr;
-
-ID3D11DepthStencilView* depthStencilView = nullptr;
-
-ID3D11Buffer* vertexBuffer = nullptr;
-
-ID3D11Buffer* indexBuffer = nullptr;
-
-ID3D11Buffer* transformBuffer = nullptr;
-
-ID3D11RasterizerState* rasterizerState = nullptr;
-
-std::chrono::steady_clock::time_point startTime{};
-
-ID3D11VertexShader* vertexShader = nullptr;
-ID3D11PixelShader* pixelShader = nullptr;
-
-ID3D11InputLayout* inputLayout = nullptr;
+enum
+	ExtensionType {
+	DDS = 0,
+	PNG = 1,
+	JPG = 2
+};
 
 /**
  * @brief Libera un recurso COM y establece su puntero en nullptr

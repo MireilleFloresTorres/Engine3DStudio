@@ -22,7 +22,7 @@ Device::CreateRenderTargetView(ID3D11Resource* pResource,
 
 	*ppRTView = nullptr;
 
-	if (device == nullptr || pResource == nullptr) {
+	if (m_device == nullptr || pResource == nullptr) {
 		ERROR("Device", "CreateRenderTargetView", "Device o Resource Pointer is null.");
 		return E_INVALIDARG;
 	}

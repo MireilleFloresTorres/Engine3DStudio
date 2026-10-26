@@ -32,6 +32,12 @@ enum
 	JPG = 2
 };
 
+struct Vertex
+{
+	float position[3];
+	float color[4];
+};
+
 /**
  * @brief Libera un recurso COM y establece su puntero en nullptr
  */

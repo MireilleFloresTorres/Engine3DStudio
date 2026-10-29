@@ -1,8 +1,10 @@
-#include "Engine/Engine.h"
-#include "Engine/Prerequisites.h"
-#include "Rendering/Device.h"
-#include "Rendering/DeviceContext.h"
-#include "Rendering/Texture2D.h"
+#include <Engine/Engine.h>
+#include <Engine/MeshComponent.h>
+#include <Engine/Prerequisites.h>
+#include <Rendering/Device.h>
+#include <Rendering/DeviceContext.h>
+#include <Rendering/Texture2D.h>
+#include <Rendering/Buffer.h>
   
 /**
  * @brief Contiene los recursos y datos internos del motor
@@ -12,14 +14,6 @@ struct
 
 	Engine::Implementation
 {
-	/**
-	 * @brief Define los datos de un vértice.
-	 */
-	struct Vertex
-	{
-		float position[3];
-		float color[4];
-	};
 
 	/**
 	* @brief Contiene la matriz de transformación del objeto.
@@ -51,15 +45,17 @@ struct
 
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 
-	ID3D11Buffer* vertexBuffer = nullptr;
-
-	ID3D11Buffer* indexBuffer = nullptr;
-
-	ID3D11Buffer* transformBuffer = nullptr;
-
+	//ID3D11Buffer* vertexBuffer = nullptr;
+	//ID3D11Buffer* indexBuffer = nullptr;
+	//ID3D11Buffer* transformBuffer = nullptr;
+	Buffer vertexBuffer;
+	Buffer indexBuffer;
+	Buffer transformBuffer;
 	ID3D11RasterizerState* rasterizerState = nullptr;
 
 	std::chrono::steady_clock::time_point startTime{};
+
+	MeshComponent mesh; 
 
 	ID3D11VertexShader* vertexShader = nullptr;
 	ID3D11PixelShader* pixelShader = nullptr;
@@ -132,9 +128,12 @@ struct
 		//}
 
 		SafeRelease(rasterizerState);
-		SafeRelease(transformBuffer);
-		SafeRelease(indexBuffer);
-		SafeRelease(vertexBuffer);
+		//SafeRelease(transformBuffer);
+		//SafeRelease(indexBuffer);
+		//SafeRelease(vertexBuffer);
+		transformBuffer.destroy();
+		indexBuffer.destroy();
+		vertexBuffer.destroy();
 
 		SafeRelease(inputLayout);
 		SafeRelease(pixelShader);
@@ -374,9 +373,9 @@ bool Engine::Initialize(
 
 	constexpr D3D11_INPUT_ELEMENT_DESC inputElements[]{
 		{"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,0, static_cast<UINT>
-		(offsetof(Implementation::Vertex, position)), D3D11_INPUT_PER_VERTEX_DATA, 0},
+		(offsetof(Vertex, position)), D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"Color", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, static_cast<UINT>
-		(offsetof(Implementation::Vertex, color)), D3D11_INPUT_PER_VERTEX_DATA, 0}
+		(offsetof(Vertex, color)), D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	result = engine.device.CreateInputLayout(inputElements,
@@ -394,7 +393,7 @@ bool Engine::Initialize(
 		return false;
 	}
 
-	constexpr Implementation::Vertex vertices[]
+	constexpr Vertex vertices[]
 	{
 		// Frente
 		{
@@ -433,29 +432,16 @@ bool Engine::Initialize(
 		}
 	};
 
-	D3D11_BUFFER_DESC vertexBufferDescription{};
+	for (const auto& vertex : vertices) {
+		engine.mesh.m_vertex.push_back(vertex);
+	}
 
-	vertexBufferDescription.ByteWidth =
-		static_cast<UINT>(sizeof(vertices));
+	engine.mesh.m_numVertex = static_cast<unsigned int>
+		(engine.mesh.m_vertex.size());
 
-	vertexBufferDescription.Usage =
-		D3D11_USAGE_IMMUTABLE;
-
-	vertexBufferDescription.BindFlags =
-		D3D11_BIND_VERTEX_BUFFER;
-
-	vertexBufferDescription.CPUAccessFlags = 0;
-	vertexBufferDescription.MiscFlags = 0;
-	vertexBufferDescription.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA initialVertexData{};
-	initialVertexData.pSysMem = vertices;
-
-	result = engine.device.CreateBuffer(
-		&vertexBufferDescription,
-		&initialVertexData,
-		&engine.vertexBuffer
-	);
+	result = engine.vertexBuffer.init(engine.device,
+									  engine.mesh, 
+									  D3D11_BIND_VERTEX_BUFFER);
 
 	if (FAILED(result))
 	{
@@ -463,7 +449,7 @@ bool Engine::Initialize(
 		return false;
 	}
 
-	constexpr std::uint16_t indices[]
+	constexpr unsigned int indices[]
 	{
 		// Frente
 		0, 1, 2,
@@ -490,17 +476,15 @@ bool Engine::Initialize(
 		3, 6, 7
 	};
 
-	D3D11_BUFFER_DESC indexBufferDescription{};
+	for (const auto& index : indices) {
+		engine.mesh.m_index.push_back(index); 
+	}
 
-	indexBufferDescription.ByteWidth = static_cast<UINT>(sizeof(indices));
-	indexBufferDescription.Usage = D3D11_USAGE_IMMUTABLE;
-	indexBufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	engine.mesh.m_numIndex = static_cast<std::uint32_t>(engine.mesh.m_index.size());
 
-	D3D11_SUBRESOURCE_DATA indexData{};
-	indexData.pSysMem = indices;
-
-	result = engine.device.CreateBuffer
-	(&indexBufferDescription, &indexData, &engine.indexBuffer);
+	result = engine.indexBuffer.init(engine.device, 
+									 engine.mesh, 
+									 D3D11_BIND_INDEX_BUFFER);
 
 	if (FAILED(result))
 	{
@@ -508,17 +492,9 @@ bool Engine::Initialize(
 		return false;
 	}
 
-	D3D11_BUFFER_DESC transformBufferDescription{};
-
-	transformBufferDescription.ByteWidth =
-		sizeof(Implementation::TransformBuffer);
-
-	transformBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	transformBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	result = engine.device.CreateBuffer(&transformBufferDescription, nullptr,
-										&engine.transformBuffer);
-
+	result = engine.transformBuffer.init(engine.device, 
+										 sizeof(Implementation::TransformBuffer));
+	
 	if (FAILED(result))
 	{
 		engine.ReleaseResources();
@@ -558,9 +534,9 @@ void Engine::Render() noexcept
 	if (!engine.context.getDeviceContext() ||
 		!engine.swapChain ||
 		!engine.renderTarget ||
-		!engine.vertexBuffer ||
-		!engine.indexBuffer ||
-		!engine.transformBuffer ||
+		!engine.vertexBuffer.getBuffer() ||
+		!engine.indexBuffer.getBuffer() ||
+		!engine.transformBuffer.getBuffer() ||
 		!engine.inputLayout ||
 		!engine.vertexShader ||
 		!engine.pixelShader)
@@ -640,26 +616,12 @@ void Engine::Render() noexcept
 		)
 	);
 
-	engine.context.UpdateSubresource(
-		engine.transformBuffer, 0, nullptr, &transform, 0, 0
-	);
+	engine.transformBuffer.update(engine.context,
+		engine.transformBuffer.getBuffer(),0,nullptr,&transform,0,0);
 
-	constexpr UINT stride =
-		sizeof(Implementation::Vertex);
+	engine.vertexBuffer.render(engine.context, 0, 1);
 
-	constexpr UINT offset = 0;
-
-	engine.context.IASetVertexBuffers(
-		0,
-		1,
-		&engine.vertexBuffer,
-		&stride,
-		&offset
-	);
-
-	engine.context.IASetIndexBuffer(
-		engine.indexBuffer, DXGI_FORMAT_R16_UINT, 0
-	);
+	engine.indexBuffer.render(engine.context, 0, 1, false, DXGI_FORMAT_R32_UINT);
 
 	engine.context.IASetInputLayout(
 		engine.inputLayout
@@ -679,11 +641,7 @@ void Engine::Render() noexcept
 		0
 	);
 
-	engine.context.VSSetConstantBuffers(
-		0,
-		1,
-		&engine.transformBuffer
-	);
+	engine.transformBuffer.render(engine.context, 0, 1);
 
 	engine.context.PSSetShader(
 		engine.pixelShader,
@@ -703,7 +661,7 @@ void Engine::Render() noexcept
 		0
 	);
 
-	engine.context.DrawIndexed(36, 0, 0);
+	engine.context.DrawIndexed(engine.mesh.m_numIndex, 0, 0);
 
 	engine.swapChain->Present(1, 0);
 }

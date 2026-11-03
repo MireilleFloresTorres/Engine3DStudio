@@ -12,38 +12,41 @@
 #include <new>
 
 
-HWND window = nullptr;
+/**
+   * @brief Libera un recurso COM y establece su puntero en nullptr
+   */
+template<typename T>
+void 
+SafeRelease(T*& object) noexcept
+{
+	if (object != nullptr)
+	{
+		object->Release();
+		object = nullptr;
+	}
+}
 
-std::uint32_t width = 0;
+/**
+ * @enum ExtensionType
+ * @brief Define los tipos de extensión de archivo admitidos.
+ */
+enum
+ExtensionType {
+	DDS = 0,
+	PNG = 1,
+	JPG = 2
+};
 
-std::int32_t height = 0;
-
-ID3D11Device* device = nullptr;
-
-ID3D11DeviceContext* context = nullptr;
-
-IDXGISwapChain* swapChain = nullptr;
-
-ID3D11RenderTargetView* renderTarget = nullptr;
-
-ID3D11Texture2D* depthStencilBuffer = nullptr;
-
-ID3D11DepthStencilView* depthStencilView = nullptr;
-
-ID3D11Buffer* vertexBuffer = nullptr;
-
-ID3D11Buffer* indexBuffer = nullptr;
-
-ID3D11Buffer* transformBuffer = nullptr;
-
-ID3D11RasterizerState* rasterizerState = nullptr;
-
-std::chrono::steady_clock::time_point startTime{};
-
-ID3D11VertexShader* vertexShader = nullptr;
-ID3D11PixelShader* pixelShader = nullptr;
-
-ID3D11InputLayout* inputLayout = nullptr;
+/**
+ * @struct Vertex
+ * @brief Representa un vértice utilizado en la geometría de una malla.
+ */
+struct 
+Vertex
+{
+	float position[3];//coordenada x, y, z
+	float color[4];// componente de color RGBA
+};
 
 /**
  * @brief Libera un recurso COM y establece su puntero en nullptr

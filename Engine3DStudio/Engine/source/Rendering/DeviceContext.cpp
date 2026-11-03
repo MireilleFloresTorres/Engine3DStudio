@@ -1,10 +1,16 @@
 #include "Rendering/DeviceContext.h"
 
+/**
+ * @brief Libera los recursos del contexto al destruir el objeto.
+ */
 DeviceContext::~DeviceContext()
 {
 	destroy();
 }
 
+/**
+ * @brief Libera el contexto de Direct3D y sus recursos asociados.
+ */
 void
 DeviceContext::destroy() {
 	if (m_deviceContext) {
@@ -14,6 +20,10 @@ DeviceContext::destroy() {
 	}
 }
 
+/**
+ * @brief Obtiene una referencia al contexto de Direct3D.
+ * @return Referencia al contexto inicializado.
+ */
 ID3D11DeviceContext&
 DeviceContext::requireContext() const noexcept
 {
@@ -24,6 +34,11 @@ DeviceContext::requireContext() const noexcept
 	return *m_deviceContext;
 }
 
+/**
+ * @brief Limpia un objetivo de renderizado con un color específico.
+ * @param pRenderTargetView Vista del objetivo de renderizado.
+ * @param colorRGBA Arreglo con los componentes del color RGBA.
+ */
 void
 DeviceContext::ClearRenderTargetView(ID3D11RenderTargetView* pRenderTargetView,
 	const float colorRGBA[4]) noexcept {
@@ -35,6 +50,10 @@ DeviceContext::ClearRenderTargetView(ID3D11RenderTargetView* pRenderTargetView,
 	requireContext().ClearRenderTargetView(pRenderTargetView, colorRGBA);
 }
 
+/**
+ * @brief Limpia el búfer de profundidad y el búfer de plantilla.
+ * @param pDepthStencilView Vista del búfer de profundidad y plantilla.
+ */
 void
 DeviceContext::ClearDepthStencilView(ID3D11DepthStencilView* pDepthStencilView,
 	unsigned int clearFlags,
@@ -48,6 +67,12 @@ DeviceContext::ClearDepthStencilView(ID3D11DepthStencilView* pDepthStencilView,
 	requireContext().ClearDepthStencilView(pDepthStencilView, clearFlags, depth, stencil);
 }
 
+/**
+ * @brief Establece los objetivos de renderizado y el búfer de profundidad.
+ * @param numViews Cantidad de objetivos de renderizado.
+ * @param ppRenderTargetViews Arreglo de vistas de los objetivos de renderizado.
+ * @param pDepthStencilView Vista del búfer de profundidad y plantilla.
+ */
 void
 DeviceContext::OMSetRenderTargets(unsigned int numViews,
 	ID3D11RenderTargetView* const* ppRenderTargetViews,
@@ -60,6 +85,11 @@ DeviceContext::OMSetRenderTargets(unsigned int numViews,
 	requireContext().OMSetRenderTargets(numViews, ppRenderTargetViews, pDepthStencilView);
 }
 
+/**
+ * @brief Establece las áreas de visualización utilizadas durante el renderizado.
+ * @param numViewports Cantidad de áreas de visualización.
+ * @param pViewports Arreglo con las configuraciones de las áreas de visualización.
+ */
 void
 DeviceContext::RSSetViewports(unsigned int numViewports,
 	const D3D11_VIEWPORT* pViewports) noexcept {
@@ -70,10 +100,16 @@ DeviceContext::RSSetViewports(unsigned int numViewports,
 	requireContext().RSSetViewports(numViewports, pViewports);
 }
 
+/**
+ * @brief Establece los recursos de textura que utilizará el shader de píxeles.
+ * @param StartSlot Posición inicial de los recursos.
+ * @param NumViews Cantidad de vistas de recursos.
+ * @param ppShaderResourceViews Arreglo de vistas de recursos del shader.
+ */
 void
 DeviceContext::PSSetShaderResources(unsigned int StartSlot,
-									unsigned int NumViews,
-									ID3D11ShaderResourceView* const* ppShaderResourceViews) {
+	unsigned int NumViews,
+	ID3D11ShaderResourceView* const* ppShaderResourceViews) {
 	if (!ppShaderResourceViews || NumViews == 0) {
 		ERROR("DeviceContext", "PSSetShaderResources", "Invalid shader resource view parameters.");
 		return;
@@ -81,6 +117,10 @@ DeviceContext::PSSetShaderResources(unsigned int StartSlot,
 	requireContext().PSSetShaderResources(StartSlot, NumViews, ppShaderResourceViews);
 }
 
+/**
+ * @brief Establece el estado de rasterización utilizado durante el renderizado.
+ * @param pRasterizerState Estado de rasterización que se aplicará.
+ */
 void
 DeviceContext::RSSetState(ID3D11RasterizerState* pRasterizerState) noexcept {
 	if (!pRasterizerState) {
@@ -90,6 +130,10 @@ DeviceContext::RSSetState(ID3D11RasterizerState* pRasterizerState) noexcept {
 	requireContext().RSSetState(pRasterizerState);
 }
 
+/**
+ * @brief Establece la distribución de los datos de entrada de los vértices.
+ * @param pInputLayout Formato de entrada que se utilizará.
+ */
 void
 DeviceContext::IASetInputLayout(ID3D11InputLayout* pInputLayout) noexcept {
 	if (!pInputLayout) {
@@ -99,11 +143,23 @@ DeviceContext::IASetInputLayout(ID3D11InputLayout* pInputLayout) noexcept {
 	requireContext().IASetInputLayout(pInputLayout);
 }
 
+/**
+ * @brief Establece el tipo de primitivas que se utilizarán para dibujar.
+ * @param topology Tipo de topología de las primitivas.
+ */
 void
 DeviceContext::IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology) noexcept {
 	requireContext().IASetPrimitiveTopology(topology);
 }
 
+/**
+ * @brief Establece los búferes que contienen los datos de los vértices.
+ * @param startSlot Posición inicial de los búferes.
+ * @param numBuffers Cantidad de búferes de vértices.
+ * @param ppVertexBuffers Arreglo de búferes de vértices.
+ * @param pStrides Arreglo con el tamaño de cada vértice.
+ * @param pOffsets Arreglo con los desplazamientos iniciales de los datos.
+ */
 void
 DeviceContext::IASetVertexBuffers(unsigned int startSlot,
 	unsigned int numBuffers,
@@ -118,6 +174,9 @@ DeviceContext::IASetVertexBuffers(unsigned int startSlot,
 	requireContext().IASetVertexBuffers(startSlot, numBuffers, ppVertexBuffers, pStrides, pOffsets);
 }
 
+/**
+ * @brief Establece el búfer que contiene los índices de los vértices.
+ */
 void
 DeviceContext::IASetIndexBuffer(ID3D11Buffer* pIndexBuffer,
 	DXGI_FORMAT format,
@@ -130,6 +189,9 @@ DeviceContext::IASetIndexBuffer(ID3D11Buffer* pIndexBuffer,
 	requireContext().IASetIndexBuffer(pIndexBuffer, format, offset);
 }
 
+/**
+ * @brief Establece el shader de vértices que se utilizará..
+ */
 void
 DeviceContext::VSSetShader(ID3D11VertexShader* pVertexShader,
 	ID3D11ClassInstance* const* ppClassInstances,
@@ -141,6 +203,10 @@ DeviceContext::VSSetShader(ID3D11VertexShader* pVertexShader,
 	requireContext().VSSetShader(pVertexShader, ppClassInstances, numClassInstances);
 }
 
+/**
+ * @brief Establece el shader de píxeles que se utilizará.
+ * @param pPixelShader Shader de píxeles.
+ */
 void
 DeviceContext::PSSetShader(ID3D11PixelShader* pPixelShader,
 	ID3D11ClassInstance* const* ppClassInstances,
@@ -152,6 +218,12 @@ DeviceContext::PSSetShader(ID3D11PixelShader* pPixelShader,
 	requireContext().PSSetShader(pPixelShader, ppClassInstances, numClassInstances);
 }
 
+/**
+ * @brief Establece los búferes constantes utilizados por el shader de vértices.
+ * @param startSlot Posición inicial de los búferes.
+ * @param numBuffers Cantidad de búferes constantes.
+ * @param ppConstantBuffers Arreglo de búferes constantes.
+ */
 void
 DeviceContext::VSSetConstantBuffers(unsigned int startSlot,
 	unsigned int numBuffers,
@@ -164,6 +236,9 @@ DeviceContext::VSSetConstantBuffers(unsigned int startSlot,
 	requireContext().VSSetConstantBuffers(startSlot, numBuffers, ppConstantBuffers);
 }
 
+/**
+ * @brief Actualiza los datos almacenados en un recurso de Direct3D.
+ */
 void
 DeviceContext::UpdateSubresource(ID3D11Resource* pDstResource,
 	unsigned int dstSubresource,
@@ -179,6 +254,12 @@ DeviceContext::UpdateSubresource(ID3D11Resource* pDstResource,
 	requireContext().UpdateSubresource(pDstResource, dstSubresource, pDstBox, pSrcData, srcRowPitch, srcDepthPitch);
 }
 
+/**
+ * @brief Ejecuta el dibujo de primitivas mediante índices.
+ * @param indexCount Cantidad de índices que se utilizarán.
+ * @param startIndexLocation Posición inicial de los índices.
+ * @param baseVertexLocation Desplazamiento aplicado a los índices de vértices.
+ */
 void
 DeviceContext::DrawIndexed(unsigned int indexCount,
 	unsigned int startIndexLocation,
@@ -190,4 +271,3 @@ DeviceContext::DrawIndexed(unsigned int indexCount,
 
 	requireContext().DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
-

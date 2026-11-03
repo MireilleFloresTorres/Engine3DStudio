@@ -1,15 +1,17 @@
 #include "Rendering/Device.h"
 
+//Libera los recursos del dispositivo al destruir el objeto 
 Device::~Device() {
 	destroy();
 }
 
+//Libera el sispositivo 
 void
 Device::destroy() {
 	SafeRelease(m_device);
 }
 
-
+/** @brief Crea una vista de destino de renderizado. */
 HRESULT
 Device::CreateRenderTargetView(ID3D11Resource* pResource,
 	const D3D11_RENDER_TARGET_VIEW_DESC* pDesc,
@@ -40,7 +42,7 @@ Device::CreateRenderTargetView(ID3D11Resource* pResource,
 	return result; 
 }
 
-
+/** @brief Crea una textura bidimensional. */
 HRESULT
 Device::CreateTexture2D(const D3D11_TEXTURE2D_DESC* pDesc,
 	const D3D11_SUBRESOURCE_DATA* pInitialData,
@@ -68,6 +70,7 @@ Device::CreateTexture2D(const D3D11_TEXTURE2D_DESC* pDesc,
 	return result;
 }
 
+/** @brief Crea una vista para utilizar un recurso como búfer de profundidad y plantilla. */
 HRESULT
 Device::CreateDepthStencilView(ID3D11Resource* pResource,
 	D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
@@ -77,7 +80,7 @@ Device::CreateDepthStencilView(ID3D11Resource* pResource,
 		return E_POINTER;
 	}
 
-	*ppDepthStencilView = nullptr; // Initialize the output pointer to nullptr
+	*ppDepthStencilView = nullptr; 
 
 	if (m_device == nullptr || pResource == nullptr) {
 		ERROR("Device", "CreateDepthStencilView", "Device or resource pointer is null.");
@@ -95,6 +98,7 @@ Device::CreateDepthStencilView(ID3D11Resource* pResource,
 	return result;
 }
 
+/** @brief Crea un sombreador de vértices a partir de su código compilado. */
 HRESULT
 Device::CreateVertexShader(const void* pShaderBytecode,
 	unsigned int BytecodeLength,
@@ -105,14 +109,13 @@ Device::CreateVertexShader(const void* pShaderBytecode,
 		return E_POINTER;
 	}
 
-	*ppVertexShader = nullptr; // Initialize the output pointer to nullptr
+	*ppVertexShader = nullptr;
 
 	if (m_device == nullptr || pShaderBytecode == nullptr || BytecodeLength == 0) {
 		ERROR("Device", "CreateVertexShader", "Device or shader bytecode pointer is null, or bytecode length is zero.");
 		return E_INVALIDARG;
 	}
 
-	// The actual implementation for creating a vertex shader is not provided in the original code.
 	HRESULT result = m_device->CreateVertexShader(pShaderBytecode, BytecodeLength, pClassLinkage, ppVertexShader);
 
 	if (FAILED(result)) {
@@ -124,6 +127,7 @@ Device::CreateVertexShader(const void* pShaderBytecode,
 	return result;
 }
 
+/** @brief Crea un sombreador de píxeles a partir de su código compilado. */
 HRESULT
 Device::CreatePixelShader(const void* pShaderBytecode,
 	unsigned int BytecodeLength,
@@ -153,6 +157,7 @@ Device::CreatePixelShader(const void* pShaderBytecode,
 	return result;
 }
 
+/** @brief Crea el diseño que define la estructura de los datos de entrada de los vértices. */
 HRESULT
 Device::CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
 	unsigned int NumElements,
@@ -211,6 +216,7 @@ Device::CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
 	return result;
 }
 
+/** @brief Crea un búfer de Direct3D 11. */
 HRESULT
 Device::CreateBuffer(const D3D11_BUFFER_DESC* pDesc,
 	const D3D11_SUBRESOURCE_DATA* pInitialData,
@@ -238,6 +244,7 @@ Device::CreateBuffer(const D3D11_BUFFER_DESC* pDesc,
 	return result;
 }
 
+/** @brief Crea un estado de rasterización para configurar el procesamiento de la geometría. */
 HRESULT
 Device::CreateRasterizerState(const D3D11_RASTERIZER_DESC* pRasterizerDesc,
 	ID3D11RasterizerState** ppRasterizerState) {

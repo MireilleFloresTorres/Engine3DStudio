@@ -2,6 +2,9 @@
 #include "Rendering/Device.h"
 #include "Rendering/DeviceContext.h"
 
+/**
+ * @brief Inicializa un búfer con los datos de una malla.
+ */
 HRESULT
 Buffer::init(Device& device, const MeshComponent& mesh, unsigned int bindFlag) {
 	if (!device.getDevice()) {
@@ -47,6 +50,9 @@ Buffer::init(Device& device, const MeshComponent& mesh, unsigned int bindFlag) {
 	return createBuffer(device, desc, &data);
 }
 
+/**
+ * @brief Inicializa un búfer de constantes con un tamaño específico.
+ */
 HRESULT
 Buffer::init(Device& device, unsigned int ByteWidth) {
 	if (!device.getDevice()) {
@@ -68,6 +74,9 @@ Buffer::init(Device& device, unsigned int ByteWidth) {
 	return createBuffer(device, desc, nullptr);
 }
 
+/**
+ * @brief Actualiza los datos almacenados en el búfer.
+ */
 void
 Buffer::update(DeviceContext& deviceContext,
 	ID3D11Resource* pDstResource,
@@ -93,6 +102,9 @@ Buffer::update(DeviceContext& deviceContext,
 		SrcDepthPitch);
 }
 
+/**
+ * @brief Enlaza el búfer correspondiente para su uso durante el renderizado.
+ */
 void
 Buffer::render(DeviceContext& deviceContext,
 	unsigned int StartSlot,
@@ -127,11 +139,17 @@ Buffer::render(DeviceContext& deviceContext,
 	}
 }
 
+/**
+ * @brief Libera el búfer y establece su puntero en nullptr.
+ */
 void
 Buffer::destroy() {
 	SAFE_RELEASE(m_buffer);
 }
 
+/**
+ * @brief Crea el búfer de Direct3D 11 con la descripción y los datos indicados.
+ */
 HRESULT
 Buffer::createBuffer(Device& device,
 	D3D11_BUFFER_DESC& desc,

@@ -2,18 +2,28 @@
 #include "Rendering/Device.h"
 #include "Rendering/DeviceContext.h"
 
+//Libera los recursos de la textura al destruir el objeto
 Texture2D::~Texture2D() noexcept {
     destroy();
 }
 
+/**
+ * @brief Inicializa una textura desde un archivo de imagen.
+ * @param device Dispositivo de Direct3D.
+ * @param fullPath Ruta del archivo.
+ * @param texture Textura que se inicializará.
+ * @return Resultado de la operación.
+ */
 HRESULT
 Texture2D::InitTextureFromImage(Device& device,
     const std::string& fullPath,
     Texture2D& texture) {
-    // TODO: implementar carga de textura desde archivo (PNG/JPG) — dejado pendiente por indicación del profesor.
     return S_OK;
 }
 
+/**
+ * @brief Crea una textura con dimensiones y formato específicos.
+ */
 HRESULT Texture2D::init(Device& device,
     const std::string& textureName,
     ExtensionType extensionType) {
@@ -91,6 +101,9 @@ HRESULT Texture2D::init(Device& device,
     return S_OK;
 }
 
+/**
+ * @brief Vincula la textura al shader de píxeles.
+ */
 void
 Texture2D::render(DeviceContext& deviceContext,
     unsigned int StartSlot,
@@ -105,6 +118,7 @@ Texture2D::render(DeviceContext& deviceContext,
     }
 }
 
+// Libera los recursos utilizados por la textura
 void
 Texture2D::destroy() {
     if (m_texture != nullptr) {

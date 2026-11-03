@@ -48,7 +48,7 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Shaders\Cube.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

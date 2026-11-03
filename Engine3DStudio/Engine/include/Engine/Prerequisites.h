@@ -16,7 +16,8 @@
    * @brief Libera un recurso COM y establece su puntero en nullptr
    */
 template<typename T>
-void SafeRelease(T*& object) noexcept
+void 
+SafeRelease(T*& object) noexcept
 {
 	if (object != nullptr)
 	{
@@ -25,17 +26,26 @@ void SafeRelease(T*& object) noexcept
 	}
 }
 
+/**
+ * @enum ExtensionType
+ * @brief Define los tipos de extensión de archivo admitidos.
+ */
 enum
-	ExtensionType {
+ExtensionType {
 	DDS = 0,
 	PNG = 1,
 	JPG = 2
 };
 
-struct Vertex
+/**
+ * @struct Vertex
+ * @brief Representa un vértice utilizado en la geometría de una malla.
+ */
+struct 
+Vertex
 {
-	float position[3];
-	float color[4];
+	float position[3];//coordenada x, y, z
+	float color[4];// componente de color RGBA
 };
 
 /**

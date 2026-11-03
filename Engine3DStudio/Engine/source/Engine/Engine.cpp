@@ -23,13 +23,14 @@ struct
 		DirectX::XMFLOAT4X4 worldViewProjection;
 	};
 
+	/** @brief Ventana donde se presenta el renderizado. */
 	HWND window = nullptr;
 
 	std::uint32_t width = 0;
 
 	std::int32_t height = 0;
 
-
+	/** @brief  Device, Swap Chain y los buffers de renderizado. */
 	Device device;
 	DeviceContext context; 
 	//ID3D11Device* device = nullptr;
@@ -175,7 +176,9 @@ Engine::~Engine() noexcept
 
 /**
  * @brief Inicializa DirectX y los recursos necesarios para renderizar
- * @param nativeWindow Ventana donde se mostrará el motor
+ * @param nativeWindow Ventana donde se mostrará el motor.
+ * @param width Ancho de la ventana en píxeles.
+ * @param height Alto de la ventana en píxeles.
  */
 bool Engine::Initialize(
 	void* nativeWindow,

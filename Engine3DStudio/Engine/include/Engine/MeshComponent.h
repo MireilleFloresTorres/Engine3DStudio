@@ -1,6 +1,15 @@
 #pragma once
 #include "Engine/Prerequisites.h"
 
+/**
+ * @class MeshComponent
+ * @brief Representa un componente que almacena la información de una malla 3D
+ *
+ * Esta clase contiene el nombre de la malla, su matriz de transformación,
+ * los vértices que la componen y los índices utilizados para definir
+ * su geometría
+ */
+
 class
 MeshComponent {
 public:
